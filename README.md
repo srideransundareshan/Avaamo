@@ -10,11 +10,18 @@ Avaamo exercise
 4) Hit the local browser on expose port to check the app up and running.
 
 git clone https://github.com/srideransundareshan/Avaamo.git
+
 cd Avaamo
+
 docker build -t avaamo/node:v1 .
+
 docker images
-docker run -d -p 8080:8080 avaamo/node:v1
+
+docker run -d --restart always -p 8080:8080 avaamo/node:v1
+
 docker ps
+
+docker exec -it "container ID" /bin/bash
 
 Validation:
 
