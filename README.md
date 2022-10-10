@@ -21,7 +21,9 @@ docker run -d --restart always -p 8080:8080 avaamo/node:v1
 
 docker ps
 
-docker exec -it "container ID" /bin/bash
+cid=$(docker ps | awk '/avaamo/ {print $1}')
+
+docker exec -it $cid /bin/bash
 
 Validation:
 
