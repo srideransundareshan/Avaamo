@@ -1,0 +1,93 @@
+Git commands:
+=============
+
+1. How do you set up a script to run every time a repository receives new commits through push?
+
+Ans: Every repository will have a hook attached to it. Those hooks are used to integrate the repo and actions performed on the repo's to other service or application.
+Ex: Triggering a Jenkins Build when a push or release on the repo occurs.
+
+Create an pre-push script under the cloned repo inside the .git/hooks/ and give the executable permission. So when ever a commit push happens the script is executed.
+
+2. How do you find a list of files that have changed in a particular commit?
+
+Ans: Any changes to a git repo is done via a commit. Each commit will have a unique commit id. Using the commit id one can check the files being altered by that commit.
+
+git show --stat COMMIT ID
+
+Monitoring using scripts:
+=========================
+
+1. Monitor a log file, detect a pattern detection, send an email on detection.
+
+Ans: tail -fn1 /var/log/tomcat/catalina.out | grep "pattern" | mail -s "pattern match" example@gmail.com
+
+2. Monitor process particular process on an instance, send an email on incase of state change like process got stopped, taking more CPU that threshold.
+
+Ans:
+
+#!/bin/bash
+clear
+pidsvc=$(systemctl status tomcat | awk ' /Main/ {print $3}')
+if [[ $(systemctl status tomcat | awk ' /Active/ {print $3}' | tr -d '()') == running ]]
+then
+if [[ "$(top -bn 1  | grep -i $pidsvc | awk '{print $9}'|cut -f 1 -d ".")" -ge 10  ]]
+then
+LOAD=$(top -bn 1  | grep -i $pidsvc | awk '{print $9}'|cut -f 1 -d ".")
+echo running with high load of $LOAD | mail -s "svc alert" example@gmail.com
+else
+LOAD=$(top -bn 1  | grep -i $pidsvc | awk '{print $9}'|cut -f 1 -d ".")
+echo running with regular load of $LOAD | mail -s "svc alert" example@gmail.com
+fi
+else
+echo "not running" | mail -s "svc alert" example@gmail.com
+fi
+
+Security:
+=========
+
+1. Show how to block ports.
+
+Ans:
+
+/sbin/iptables -A INPUT -p tcp --destination-port 80 -j DROP
+
+/sbin/service iptables save
+
+2. Show how to setup port forwarding.
+
+Ans:
+
+/sbin/iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 443 -j REDIRECT --to-port 80
+
+/sbin/service iptables save
+
+Network:
+========
+
+1. Show list of processes using the network.
+
+Ans: netstat --inet -np
+
+2. Show the list of IPs a process is connected to.
+
+Ans: netstat -pn  | grep -i java | awk '{print $5}' | head -n -3 | cut -d ":" -f1
+
+3. Show how to list open files and kill processes tied to a user.
+
+Ans:
+
+To list open files of a user: lsof -u "username"
+
+To kill the process tied to a user: kill -9 $(lsof -t -u username)
+
+Code:
+=====
+Write a short program that prints each number from 1 to 100 on a new line. For each multiple of 3, print "AVA" instead of the number.
+For each multiple of 5, print "AMO" instead of the number.
+
+For numbers which are multiples of both 3 and 5, print "AVAAMO" instead of the number.
+
+
+Ans:
+
+for ((i=1;i<=30;i++)); do echo "$i"; done |  sed -E '0~3s/[0-9]+/AVA/; 0~5s/[0-9]+/AMO/; 0~15s/AVA/AVAAMO/'
