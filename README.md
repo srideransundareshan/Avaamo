@@ -8,7 +8,6 @@ Avaamo exercise
 3) Once the image is created run the image.
 4) Hit the local browser on expose port to check the app up and running.
 
-==========================================================
 
 git clone https://github.com/srideransundareshan/Avaamo.git
 
